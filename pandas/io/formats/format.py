@@ -879,6 +879,10 @@ class LatexFormatter(TableFormatter):
             else:
                 return 'l'
 
+        def print_obj(n, o):
+            print('----\n', n, ': ', o.__class__.__name__, ': ', o, '\n----')
+
+
         # reestablish the MultiIndex that has been joined by _to_str_column
         if self.fmt.index and isinstance(self.frame.index, MultiIndex):
             clevels = self.frame.columns.nlevels
@@ -887,8 +891,11 @@ class LatexFormatter(TableFormatter):
             cname = any(self.frame.columns.names)
             lastcol = self.frame.index.nlevels - 1
             previous_lev3 = None
+            print_obj('levels', self.frame.index.levels)
             for i, lev in enumerate(self.frame.index.levels):
+                print_obj('lev', lev)
                 lev2 = lev.format()
+                print_obj('lev2', lev2)
                 blank = ' ' * len(lev2[0])
                 # display column names in last index-column
                 if cname and i == lastcol:
@@ -897,6 +904,11 @@ class LatexFormatter(TableFormatter):
                     lev3 = [blank] * clevels
                 if name:
                     lev3.append(lev.name)
+                group_level = i if i == 0 else list(range(0, i + 1))
+                print_obj('group_level', group_level)
+                for level_idx, group in self.frame.groupby(
+                        level=group_level, sort=False):
+                    print_obj('level_idx', level_idx)
                 current_idx_val = None
                 for level_idx in self.frame.index.labels[i]:
                     if ((previous_lev3 is None or

@@ -240,7 +240,48 @@ B & c &  NaN \\
 \bottomrule
 \end{tabular}
 """
+        assert result == expected
 
+        # The index may not be in ascending order
+        df = pd.DataFrame([
+            [4, 4, 'u'],
+            [4, 2, 'v'],
+            [2, 1, 'w'],
+            [3, 1, 'x']
+        ],
+        columns=['A','B','C']).set_index(['A', 'B'])
+        result = df.to_latex()
+        expected = r"""\begin{tabular}{lll}
+\toprule
+  &   &  C \\
+A & B &    \\
+\midrule
+4 & 4 &  u \\
+  & 2 &  v \\
+2 & 1 &  w \\
+3 & 1 &  x \\
+\bottomrule
+\end{tabular}
+"""
+        assert result == expected
+
+        # Indicies have to be formatted according to index.format()
+        df = pd.DataFrame([
+            [pd.to_datetime('2016', format='%Y'), 'a'],
+            [pd.to_datetime('2017', format='%Y'), 'b'],
+        ],
+        columns=['date','char']).set_index(['date'])
+        result = df.to_latex()
+        expected = r"""\begin{tabular}{ll}
+\toprule
+{} & char \\
+date       &      \\
+\midrule
+2016-01-01 &    a \\
+2017-01-01 &    b \\
+\bottomrule
+\end{tabular}
+"""
         assert result == expected
 
     def test_to_latex_multicolumnrow(self):
